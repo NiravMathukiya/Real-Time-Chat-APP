@@ -1,21 +1,20 @@
 import React, { useRef } from 'react'
 import { useState } from 'react'
-import { useAuthStore } from '../store/useAuthStore';
 import { useChatStore } from '../store/useChatStore';
 import { Image, Send, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const MessageInput = () => {
-  const [text, setText] = useState();
-  const [imgPreview, setImgPreview] = useState()
+  const [text, setText] = useState("");
+  const [imgPreview, setImgPreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if(!file.type.startWith("image/"))
-    {
-      toast.error("please selelct Image Only")
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Please select an image file only");
+      return;
     }
     const reader = new FileReader();
     reader.onload = () => {
@@ -23,22 +22,23 @@ const MessageInput = () => {
     };
     reader.readAsDataURL(file);
   };
-  const removeImage = () => { 
+
+  const removeImage = () => {
     setImgPreview(null);
-    if(fileInputRef.current) fileInputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
-  const handleSendMessage = async (e) => { 
+
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if(!text.trim() && !imgPreview) return;
+    if (!text.trim() && !imgPreview) return;
     try {
       await sendMessage({
-        text : text.trim(),
-        image : imgPreview,
+        text: text.trim(),
+        image: imgPreview,
       });
       setText("");
       setImgPreview(null);
-      if(fileInputRef.current) fileInputRef.current.value = "";
-      
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error(error);
     }
@@ -46,18 +46,17 @@ const MessageInput = () => {
 
   return (
     <div className='p-4 w-full'>
-      {imagePreview && (
+      {imgPreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
             <img
-              src={imagePreview}
+              src={imgPreview}
               alt="Preview"
               className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
-              flex items-center justify-center"
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 flex items-center justify-center"
               type="button"
             >
               <X className="size-3" />
@@ -84,7 +83,7 @@ const MessageInput = () => {
           <button
             type="button"
             className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+                     ${imgPreview ? "text-emerald-500" : "text-zinc-400"}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <Image size={20} />
@@ -93,13 +92,13 @@ const MessageInput = () => {
         <button
           type="submit"
           className="btn btn-sm btn-circle"
-          disabled={!text.trim() && !imagePreview}
+          disabled={!text.trim() && !imgPreview}
         >
           <Send size={22} />
         </button>
       </form>
     </div>
-  )
+  );
 }
 
-export default MessageInput
+export default MessageInput;
