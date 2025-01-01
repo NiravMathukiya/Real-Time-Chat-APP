@@ -17,6 +17,7 @@
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^7.1.1",
+    "real-time-chat-app-with-react-and-node": "file:..",
     "socket.io-client": "^4.8.1",
     "zustand": "^5.0.2"
   },
